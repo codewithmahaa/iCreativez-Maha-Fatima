@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Maha Fatima | Headline Analyzer: Blog Title Intelligence</title>
+    <!-- Font Awesome 6 (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Inter & Space Grotesk for modern feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+            font-family: 'Inter', sans-serif;
+            color: #1a2c3e;
+            line-height: 1.4;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Main container */
+        .analyzer-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* header section with author identity */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(10, 45, 70, 0.08);
+            backdrop-filter: blur(2px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 80px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #0f2b3b;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(40, 90, 120, 0.2);
+        }
+
+        .badge i {
+            color: #2c7da0;
+            font-size: 1rem;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 600;
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, #1F4E6E, #0F2C3F);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            color: #4a627a;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* grid layout: left analyzer + right insights */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        /* card style */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(0px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0,0,0,0.02);
+            padding: 1.8rem;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .card:hover {
+            box-shadow: 0 25px 40px -14px rgba(0, 32, 64, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 0.8rem;
+        }
+
+        .card-header i {
+            font-size: 1.8rem;
+            color: #2c7da0;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e3b4f;
+        }
+
+        /* text input area */
+        .headline-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            font-size: 1.1rem;
+            font-family: 'Inter', monospace;
+            border: 2px solid #dee4ea;
+            border-radius: 1.5rem;
+            background: white;
+            transition: all 0.2s;
+            resize: vertical;
+            font-weight: 500;
+            color: #0b2b3b;
+        }
+
+        .headline-input:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.75rem;
+            color: #6c86a0;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* live metrics pills */
+        .metric-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.8rem 0 1rem;
+        }
+
+        .metric-pill {
+            background: #f0f4f9;
+            border-radius: 2rem;
+            padding: 0.5rem 1.1rem;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            transition: all 0.1s;
+        }
+
+        .metric-pill .metric-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: #5b7c9c;
+        }
+
+        .metric-pill .metric-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e4f6e;
+            line-height: 1.2;
+        }
+
+        .score-meter {
+            margin: 1rem 0;
+        }
+
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 40px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #2c7da0, #5fa7c2);
+            width: 0%;
+            height: 100%;
+            border-radius: 40px;
+            transition: width 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .score-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: monospace;
+            letter-spacing: -1px;
+        }
+
+        .analysis-tag {
+            display: inline-block;
+            background: #eef3fc;
+            border-radius: 40px;
+            padding: 0.25rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1d5a7a;
+        }
+
+        .insight-list {
+            list-style: none;
+            margin-top: 1.2rem;
+        }
+
+        .insight-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.95rem;
+            color: #2c4053;
+        }
+
+        .insight-list li i {
+            margin-top: 2px;
+            font-size: 1.1rem;
+            color: #2c7da0;
+        }
+
+        .word-bank {
+            background: #f8fafd;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-top: 1.2rem;
+            border: 1px solid #e2edf2;
+        }
+
+        .word-bank p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .emotion-badge {
+            background: white;
+            border-radius: 32px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        hr {
+            margin: 1.5rem 0 0.5rem;
+            border: none;
+            height: 1px;
+            background: #e2edf2;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 2.8rem;
+            font-size: 0.8rem;
+            color: #5f7f9a;
+            border-top: 1px solid #dce5ec;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 780px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            h1 {
+                font-size: 1.9rem;
+            }
+            body {
+                padding: 1.2rem;
+            }
+        }
+
+        button {
+            background: none;
+            border: none;
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 1rem 0 0.2rem;
+        }
+
+        .example-btn {
+            background: #eef2f7;
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.1s;
+            color: #1e5a7a;
+        }
+
+        .example-btn:hover {
+            background: #dce6f0;
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body>
+<div class="analyzer-container">
+    <div class="hero-section">
+        <div class="badge">
+            <i class="fas fa-microchip"></i>
+            <span>Maha Fatima · Programming · Cybersecurity · Networking</span>
+            <i class="fas fa-shield-haltered"></i>
+        </div>
+        <h1>📈 Headline Analyzer</h1>
+        <div class="tagline">AI-powered headline scoring · Emotional resonance · SEO intelligence</div>
+    </div>
+
+    <div class="dashboard">
+        <!-- LEFT PANEL: INPUT + LIVE METRICS -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-pen-fancy"></i>
+                <h2>Write your headline</h2>
+            </div>
+            <textarea id="headlineInput" class="headline-input" rows="3" placeholder="e.g., '10 Essential Cybersecurity Tips Every Developer Should Know in 2025' ..."></textarea>
+            <div class="char-counter">
+                <span id="charCount">0</span> characters | <span id="wordCount">0</span> words
+            </div>
+            <div class="example-buttons">
+                <span class="example-btn" data-headline="🔥 The Ultimate Python Guide for Ethical Hackers (2025)">📌 Python + Hacking</span>
+                <span class="example-btn" data-headline="Zero Trust Architecture: Why Your Network Needs a Security Overhaul">🛡️ Zero Trust</span>
+                <span class="example-btn" data-headline="5 Shocking Programming Mistakes That Lead to Data Breaches">⚠️ Data Breaches</span>
+                <span class="example-btn" data-headline="Mastering Cloud Networking: A Step-by-Step Blueprint">☁️ Cloud Blueprint</span>
+            </div>
+            <!-- live metrics grid -->
+            <div class="metric-grid">
+                <div class="metric-pill"><div class="metric-label">Word balance</div><div class="metric-value" id="wordBalanceMetric">—</div></div>
+                <div class="metric-pill"><div class="metric-label">Emotional score</div><div class="metric-value" id="emotionalScore">—</div></div>
+                <div class="metric-pill"><div class="metric-label">Readability</div><div class="metric-value" id="readabilityMetric">—</div></div>
+            </div>
+            <!-- main score bar -->
+            <div class="score-meter">
+                <div class="score-label"><span>🏆 Headline Score</span><span id="totalScoreDisplay" class="score-number">0</span><span>/100</span></div>
+                <div class="progress-bar-bg"><div class="progress-fill" id="scoreFillBar"></div></div>
+            </div>
+            <div class="analysis-tag" id="verdictTag">⚡ Enter a headline to analyze</div>
+        </div>
+
+        <!-- RIGHT PANEL: DEEP INSIGHTS & SUGGESTIONS -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <h2>SEO & Power Insights</h2>
+            </div>
+            <div id="dynamicInsights">
+                <div style="color: #6f8eaa; text-align: center; padding: 2rem 0;">
+                    <i class="fas fa-lightbulb" style="font-size: 2rem; opacity: 0.5;"></i>
+                    <p>Your headline analysis will appear here ✨</p>
+                </div>
+            </div>
+            <div class="word-bank" id="powerWordsPanel">
+                <p><i class="fas fa-bolt"></i> Power words & emotion triggers</p>
+                <div id="emotionChips">—</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        <i class="fas fa-brain"></i> Intelligent headline scoring based on length, emotional triggers, power words, readability & structure — crafted by Maha Fatima (CS & Cyber)
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----------------------------- SMART HEADLINE ANALYZER ENGINE -----------------------------
+        // WORD LISTS: Power words, emotional categories, common stop words
+        const POWER_WORDS = [
+            "ultimate", "essential", "proven", "powerful", "secret", "exclusive", "insane", "unbelievable",
+            "mind-blowing", "shocking", "revolutionary", "breakthrough", "guaranteed", "simple", "genius",
+            "master", "blueprint", "step-by-step", "complete", "advanced", "deadly", "critical", "vital",
+            "unlock", "boost", "skyrocket", "double", "explosive", "free", "save", "amazing", "brilliant"
+        ];
+        
+        const EMOTION_MAP = {
+            positive: ["ultimate", "essential", "proven", "powerful", "genius", "master", "boost", "free", "amazing", "brilliant", "simple", "complete", "unlock", "save"],
+            negative: ["shocking", "deadly", "dangerous", "awful", "mistake", "breach", "hack", "fail", "risk", "warning", "attack", "vulnerability"],
+            urgency: ["now", "today", "immediately", "fast", "rapid", "2025", "deadline", "instant", "quick", "breakthrough"]
+        };
+        
+        // helper: clean and tokenize
+        function tokenize(text) {
+            return text.toLowerCase().match(/\b\w+\b/g) || [];
+        }
+        
+        // count power words
+        function countPowerWords(tokens) {
+            let powerCount = 0;
+            let matched = [];
+            for (let token of tokens) {
+                if (POWER_WORDS.includes(token)) {
+                    powerCount++;
+                    if(!matched.includes(token)) matched.push(token);
+                }
+            }
+            return { count: powerCount, unique: matched };
+        }
+        
+        // emotional classification & score (0-30)
+        function computeEmotionalScore(tokens) {
+            let pos = 0, neg = 0, urgency = 0;
+            tokens.forEach(token => {
+                if (EMOTION_MAP.positive.includes(token)) pos++;
+                if (EMOTION_MAP.negative.includes(token)) neg++;
+                if (EMOTION_MAP.urgency.includes(token)) urgency++;
+            });
+            let rawScore = (pos * 6) + (urgency * 4) - (neg * 5);
+            rawScore = Math.min(30, Math.max(0, rawScore + 10));
+            return { score: Math.floor(rawScore), posCount: pos, negCount: neg, urgencyCount: urgency };
+        }
+        
+        // word balance metric: length ratio + unique words diversity 0-15pts
+        function wordBalanceScore(tokens) {
+            if(tokens.length === 0) return 0;
+            const uniqueRatio = new Set(tokens).size / tokens.length;
+            let lenScore = 0;
+            // ideal length 5-12 words => best
+            if(tokens.length >= 4 && tokens.length <= 14) lenScore = 8;
+            else if(tokens.length >= 15 && tokens.length <= 18) lenScore = 5;
+            else if(tokens.length > 18) lenScore = 2;
+            else if(tokens.length < 4) lenScore = 3;
+            const uniquePoints = Math.min(7, Math.floor(uniqueRatio * 12));
+            return Math.min(15, lenScore + uniquePoints);
+        }
+        
+        // Readability (Flesch ease inspired: avg word length + sentence simplicity) 0-15
+        function readabilityScore(text, tokens) {
+            if(tokens.length === 0) return 0;
+            let avgWordLength = text.replace(/\s/g, '').length / tokens.length;
+            let longWordRatio = tokens.filter(w => w.length >= 7).length / tokens.length;
+            let base = 12;
+            if(avgWordLength > 7) base -= 4;
+            else if(avgWordLength > 5.5) base -= 1.5;
+            else if(avgWordLength < 4.2) base += 2;
+            if(longWordRatio > 0.4) base -= 4;
+            else if(longWordRatio > 0.2) base -= 1;
+            let hasPunctuation = /[!?;:]/.test(text);
+            if(hasPunctuation) base += 1.5;
+            return Math.min(15, Math.max(0, Math.floor(base)));
+        }
+        
+        // structural / clarity score (capitalization, starting power, etc) 0-15
+        function structureScore(text, tokens) {
+            if(!text || tokens.length === 0) return 0;
+            let score = 5;
+            // starts with number or strong word?
+            const firstWord = tokens[0];
+            if(firstWord && (POWER_WORDS.includes(firstWord) || /^\d/.test(firstWord))) score += 3;
+            // contains question mark? engagement
+            if(text.includes('?')) score += 2;
+            // proper caps ratio: first letter of headline should be capital ideally
+            if(text[0] === text[0].toUpperCase() && text[0] !== text[0].toLowerCase()) score += 1;
+            // ends with powerful punctuation
+            if(text.trim().endsWith('!')) score += 2;
+            if(text.length > 30 && text.length < 80) score += 1;
+            return Math.min(15, score);
+        }
+        
+        // SEO / keyword context (has numbers, power words density, etc) 0-25
+        function seoBoostScore(tokens, powerData, emotional) {
+            let base = 10;
+            // power word density
+            let powerDensity = powerData.count / Math.max(1, tokens.length);
+            base += Math.min(8, Math.floor(powerDensity * 18));
+            // contains number? attracts clicks
+            let hasNumber = tokens.some(tok => /\d+/.test(tok));
+            if(hasNumber) base += 4;
+            // contains brackets or year?
+            if(/\b20\d{2}\b/.test(tokens.join(' '))) base += 2;
+            // emotional urgency boost
+            if(emotional.urgencyCount > 0) base += 2;
+            if(emotional.posCount > 0) base += 1;
+            return Math.min(25, base);
+        }
+        
+        // Additional insight: suggest improvements
+        function generateInsights(text, tokens, powerData, emotional, structScore, readabilityVal, wordBalanceVal, totalScore) {
+            let insights = [];
+            if(tokens.length < 4) insights.push({ icon: "fas fa-exclamation-triangle", text: "Headline is very short. Add specific benefits or power words to boost engagement." });
+            else if(tokens.length > 18) insights.push({ icon: "fas fa-compress", text: "Headline is quite long. Keep it under 65 characters for social sharing & clarity." });
+            
+            if(powerData.count === 0) insights.push({ icon: "fas fa-bolt", text: "No power words detected. Add words like 'Essential', 'Ultimate' or 'Proven' to increase impact." });
+            else if(powerData.count < 2) insights.push({ icon: "fas fa-charging-station", text: "Add one more power word for emotional weight." });
+            
+            if(emotional.negCount > emotional.posCount) insights.push({ icon: "fas fa-face-frown", text: "Negative tone might reduce click-through. Balance with positive framing if possible." });
+            if(emotional.urgencyCount === 0 && tokens.length > 5) insights.push({ icon: "fas fa-hourglass-half", text: "Add a sense of urgency (e.g., 'Now', '2025', 'Today') to increase CTR." });
+            
+            if(!text.includes('?')) insights.push({ icon: "fas fa-question-circle", text: "Questions often boost curiosity. Try phrasing as a question for deeper engagement." });
+            if(structScore < 8 && tokens.length > 0) insights.push({ icon: "fas fa-edit", text: "Try starting with a number or a strong adjective to grab attention." });
+            if(readabilityVal < 7) insights.push({ icon: "fas fa-font", text: "Shorten complex words. Simpler headlines perform better across devices." });
+            if(totalScore >= 80) insights.push({ icon: "fas fa-trophy", text: "Excellent headline! High potential for viral reach & SEO ranking." });
+            else if(totalScore >= 65) insights.push({ icon: "fas fa-thumbs-up", text: "Solid headline! Minor tweaks could push it to top-tier performance." });
+            else if(totalScore < 45 && tokens.length > 0) insights.push({ icon: "fas fa-chart-simple", text: "Re-evaluate your headline: more clarity, power words and emotion needed." });
+            
+            if(!/\d/.test(text) && tokens.length > 5) insights.push({ icon: "fas fa-list-ol", text: "Including a number (e.g., '7 Ways') improves specificity and clicks." });
+            // deduplicate some
+            return insights.slice(0, 7);
+        }
+        
+        // render emotion chips (power words found)
+        function renderEmotionChips(powerUnique, emotional) {
+            let chipsHtml = '';
+            if(powerUnique.length === 0 && emotional.posCount === 0 && emotional.urgencyCount === 0) {
+                chipsHtml = '<span class="emotion-badge"><i class="fas fa-comment"></i> No strong emotion triggers</span>';
+            } else {
+                if(powerUnique.length) {
+                    chipsHtml += `<span class="emotion-badge"><i class="fas fa-fire"></i> Power: ${powerUnique.slice(0,4).join(', ')}${powerUnique.length>4 ? '+' : ''}</span> `;
+                }
+                if(emotional.posCount) chipsHtml += `<span class="emotion-badge"><i class="fas fa-smile"></i> Positive (${emotional.posCount})</span> `;
+                if(emotional.urgencyCount) chipsHtml += `<span class="emotion-badge"><i class="fas fa-clock"></i> Urgency (${emotional.urgencyCount})</span> `;
+                if(emotional.negCount) chipsHtml += `<span class="emotion-badge"><i class="fas fa-skull-crosswalk"></i> Caution tone</span> `;
+            }
+            return chipsHtml;
+        }
+        
+        // main update function
+        function analyzeHeadline() {
+            const rawText = document.getElementById('headlineInput').value;
+            const text = rawText.trim();
+            const charCount = text.length;
+            const tokens = tokenize(text);
+            const wordLen = tokens.length;
+            
+            document.getElementById('charCount').innerText = charCount;
+            document.getElementById('wordCount').innerText = wordLen;
+            
+            if(wordLen === 0) {
+                // reset UI
+                document.getElementById('wordBalanceMetric').innerText = '—';
+                document.getElementById('emotionalScore').innerText = '—';
+                document.getElementById('readabilityMetric').innerText = '—';
+                document.getElementById('totalScoreDisplay').innerText = '0';
+                document.getElementById('scoreFillBar').style.width = '0%';
+                document.getElementById('verdictTag').innerHTML = '⚡ Enter a headline to analyze';
+                document.getElementById('dynamicInsights').innerHTML = `<div style="color: #6f8eaa; text-align: center; padding: 2rem 0;"><i class="fas fa-lightbulb" style="font-size: 2rem; opacity: 0.5;"></i><p>Your headline analysis will appear here ✨</p></div>`;
+                document.getElementById('emotionChips').innerHTML = '—';
+                return;
+            }
+            
+            const powerData = countPowerWords(tokens);
+            const emotional = computeEmotionalScore(tokens);
+            const wordBalanceVal = wordBalanceScore(tokens);
+            const readabilityVal = readabilityScore(text, tokens);
+            const structVal = structureScore(text, tokens);
+            const seoVal = seoBoostScore(tokens, powerData, emotional);
+            
+            let totalScore = wordBalanceVal + emotional.score + readabilityVal + structVal + seoVal;
+            totalScore = Math.min(100, Math.max(0, totalScore));
+            
+            // update metric pills
+            document.getElementById('wordBalanceMetric').innerHTML = wordBalanceVal + '/15';
+            document.getElementById('emotionalScore').innerHTML = emotional.score + '/30';
+            document.getElementById('readabilityMetric').innerHTML = readabilityVal + '/15';
+            document.getElementById('totalScoreDisplay').innerHTML = totalScore;
+            document.getElementById('scoreFillBar').style.width = totalScore + '%';
+            
+            let verdict = '';
+            if(totalScore >= 85) verdict = '🏆 Viral Potential! Exceptional headline';
+            else if(totalScore >= 70) verdict = '🔥 High-performing · Great engagement';
+            else if(totalScore >= 55) verdict = '📈 Solid · Needs small tweaks';
+            else if(totalScore >= 40) verdict = '⚠️ Average · Optimize with power words';
+            else verdict = '🔄 Needs improvement · Rewrite for clarity & emotion';
+            document.getElementById('verdictTag').innerHTML = verdict;
+            
+            // insights generation
+            const insightsList = generateInsights(text, tokens, powerData, emotional, structVal, readabilityVal, wordBalanceVal, totalScore);
+            const insightsHTML = `<ul class="insight-list">${insightsList.map(ins => `<li><i class="${ins.icon}"></i><span>${ins.text}</span></li>`).join('')}</ul>${insightsList.length === 0 ? '<p style="color:green"><i class="fas fa-check-circle"></i> Great structure! Minor adjustments may boost score.</p>' : ''}`;
+            document.getElementById('dynamicInsights').innerHTML = `<div><strong><i class="fas fa-microphone-alt"></i> Real-time suggestions</strong>${insightsHTML}</div>`;
+            
+            const emotionChipsHtml = renderEmotionChips(powerData.unique, emotional);
+            document.getElementById('emotionChips').innerHTML = emotionChipsHtml;
+        }
+        
+        // event listeners
+        const inputEl = document.getElementById('headlineInput');
+        inputEl.addEventListener('input', analyzeHeadline);
+        // set default example headline to show robust analyzer
+        const defaultExample = "Zero Trust Architecture: Why Your Network Needs a Security Overhaul";
+        inputEl.value = defaultExample;
+        analyzeHeadline();
+        
+        // attach example buttons
+        const btns = document.querySelectorAll('.example-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const headline = btn.getAttribute('data-headline');
+                if(headline) {
+                    inputEl.value = headline;
+                    analyzeHeadline();
+                    inputEl.focus();
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
